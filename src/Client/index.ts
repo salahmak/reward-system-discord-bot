@@ -10,15 +10,15 @@ class ExtendedClient extends Client {
 	public aliases: Collection<string, Command> = new Collection();
 
 	public config: Config = {
-    token: process.env.TOKEN,
+		token: process.env.TOKEN,
 
-    mongoUrl:
-        process.env.NODE_ENV === "production"
-            ? process.env.MONGO_URL_PROD
-            : process.env.MONGO_URL_DEV,
+		mongoUrl:
+			process.env.NODE_ENV === "production"
+				? process.env.MONGO_URL_PROD
+				: process.env.MONGO_URL_DEV,
 
-    prefix: process.env.PREFIX,
-};
+		prefix: process.env.PREFIX,
+	};
 
 	constructor() {
 		super({
@@ -32,7 +32,7 @@ class ExtendedClient extends Client {
 
 	public async init() {
 		this.login(this.config.token);
-		mongoose.connect(this.config.mongoUrl)
+		mongoose.connect(this.config.mongoUrl);
 
 		const commandPath = path.join(__dirname, "..", "Commands");
 		readdirSync(commandPath).forEach((dir) => {
