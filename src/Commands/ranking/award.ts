@@ -12,6 +12,11 @@ export const command: Command = {
 
 		try{
 
+			if(!msg.member.permissions.has("ADMINISTRATOR")){
+				msg.channel.send(`<@${msg.author.id}> You don't have access to this command, if you have solved a challenge, please ask admins to award you, thanks.`)
+				return;
+			}
+
 			let id: string;
 			const server = msg.guildId!.toString();
 			const points = +args[2]
