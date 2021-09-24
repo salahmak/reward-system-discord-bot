@@ -2,22 +2,22 @@ import { Client, Collection, Intents } from "discord.js";
 import mongoose from "mongoose";
 import path from "path";
 import { readdirSync } from "fs";
-import { Command, Event, Config } from "../Interfaces/index";
+import { Command, Event } from "../Interfaces/index";
 
 class ExtendedClient extends Client {
 	public commands: Collection<string, Command> = new Collection();
 	public events: Collection<string, Event> = new Collection();
 	public aliases: Collection<string, Command> = new Collection();
 
-	public config: Config = {
-		token: process.env.TOKEN,
+	public config = {
+		token: process.env.TOKEN || "",
 
 		mongoUrl:
 			process.env.NODE_ENV === "production"
-				? process.env.MONGO_URL_PROD
-				: process.env.MONGO_URL_DEV,
+				? process.env.MONGO_URL_PROD || ""
+				: process.env.MONGO_URL_DEV || "",
 
-		prefix: process.env.PREFIX,
+		prefix: process.env.PREFIX || "",
 	};
 
 	constructor() {
@@ -31,7 +31,7 @@ class ExtendedClient extends Client {
 	}
 
 	public async init() {
-		this.login(this.config.token);
+		this.login(this.config.token as string);
 		mongoose.connect(this.config.mongoUrl);
 
 		const commandPath = path.join(__dirname, "..", "Commands");
