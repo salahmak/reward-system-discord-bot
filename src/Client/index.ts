@@ -35,15 +35,11 @@ class ExtendedClient extends Client {
 		mongoose.connect(this.config.mongoUrl);
 
 		const commandPath = path.join(__dirname, "..", "Commands");
-		readdirSync(commandPath).forEach((dir) => {
-			const commands = readdirSync(`${commandPath}/${dir}`).filter(
-				(file) => {
-					return file.endsWith(".ts");
-				}
-			);
+		readdirSync(commandPath).forEach(async (dir) => {
+			const commands = readdirSync(`${commandPath}/${dir}`);
 
 			for (const file of commands) {
-				const { command } = require(`${commandPath}/${dir}/${file}`);
+				const { command } = await import(`${commandPath}/${dir}/${file}`);
 				this.commands.set(command.name, command);
 
 				if (command.aliases.length !== 0) {
