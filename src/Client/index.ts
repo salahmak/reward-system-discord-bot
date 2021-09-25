@@ -10,7 +10,9 @@ class ExtendedClient extends Client {
 	public aliases: Collection<string, Command> = new Collection();
 
 	public config = {
-		token: process.env.TOKEN || "",
+		token: process.env.NODE_ENV === "production"
+				? process.env.TOKEN || ""
+				: process.env.TOKEN_DEV || "",
 
 		mongoUrl:
 			process.env.NODE_ENV === "production"
