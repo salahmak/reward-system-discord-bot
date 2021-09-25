@@ -8,6 +8,8 @@ import { ExtendedClient } from "../../Client/index";
 
 export const command: Command = {
 	name: "profile",
+	description: "Shows the score and number of solved challenges of a user",
+	usage: `\`profile\`: shows profile of the person who did the command\n\`profile @user\`: shows the profile of @user`,
 	run: async (client: ExtendedClient, msg: Message, args: string[]) => {
 		try {
 			const mention = msg.mentions.users.first()

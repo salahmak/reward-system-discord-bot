@@ -8,6 +8,8 @@ import { ExtendedClient } from "../../Client/index";
 
 export const command: Command = {
 	name: "leaderboard",
+	description: "lists top users sorted by their scores",
+	usage: "\`leaderboard\`",
 	run: async (client: ExtendedClient, msg: Message, args: string[]) => {
 		try {
 

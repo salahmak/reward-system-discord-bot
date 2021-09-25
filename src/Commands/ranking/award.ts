@@ -8,6 +8,8 @@ import {ExtendedClient} from "../../Client/index"
 
 export const command: Command = {
 	name: "award",
+	description: "used by admins to give points to users when they solve a challenge",
+	usage: `\`award @user <amount>\``, 
 	run: async (client: ExtendedClient, msg: Message, args: string[]) => {
 
 		try{
