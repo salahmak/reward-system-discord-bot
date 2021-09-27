@@ -50,7 +50,7 @@ export const command: Command = {
 				.setAuthor("Profile")
 				.setThumbnail(avatarURL)
 				.addField("Score:", `${user.score}`)
-				.addField("Challenged solved:", `${user.solved}`)
+				.addField("Challenges solved:", `${user.solved}`)
 				.addField("Rank:", `${rank}/${total}`)
 				.setColor("#33ffe7")
 				.setFooter(serverName)
