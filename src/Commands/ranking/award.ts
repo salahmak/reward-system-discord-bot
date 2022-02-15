@@ -79,5 +79,5 @@ export const command: Command = {
             console.log("error has occured in award.ts");
         }
     },
-    aliases: ["a"],
+    aliases: ["a", "reward"],
 };
