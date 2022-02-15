@@ -12,6 +12,7 @@ export const command: Command = {
 
 		//the command that we want to get help for
 		const cmd = args[1];
+		
 
 		//initializing the embed
 		const embed = new MessageEmbed()
@@ -19,7 +20,7 @@ export const command: Command = {
 			.setColor("#33ffe7");
 
 		//in case if we want help for only 1 command
-		if (cmd && commandKeys.includes(cmd)) {
+		if (Boolean(cmd) && commandKeys.includes(cmd)) {
 			const command = client.commands.get(cmd);
 			embed.setTitle(command!.name);
 			embed.addField("Descriptions:", command!.description);
