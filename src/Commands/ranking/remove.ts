@@ -8,7 +8,7 @@ import { ExtendedClient } from "../../Client/index";
 export const command: Command = {
     name: "remove",
     description: "used by admins to take away points from users",
-    usage: `\`remove @user <amount>\``,
+    usage: `\`remove @users <amount>\``,
     run: async (client: ExtendedClient, msg: Message, args: string[]) => {
         try {
             if (!msg.member!.permissions!.has("ADMINISTRATOR")) {
