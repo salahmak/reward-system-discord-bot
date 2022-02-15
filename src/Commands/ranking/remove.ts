@@ -6,7 +6,7 @@ import UserModel from "../../models/user";
 import { ExtendedClient } from "../../Client/index";
 
 export const command: Command = {
-    name: "award",
+    name: "remove",
     description: "used by admins to take away points from users",
     usage: `\`remove @user <amount>\``,
     run: async (client: ExtendedClient, msg: Message, args: string[]) => {
