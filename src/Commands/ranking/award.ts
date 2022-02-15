@@ -19,7 +19,7 @@ export const command: Command = {
                 return;
             }
 
-            let ids: string[] = ["qssdf"];
+            let ids: string[] = [];
             const server = msg.guildId!.toString();
             const points = +args[args.length - 1];
 
