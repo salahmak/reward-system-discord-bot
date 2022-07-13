@@ -63,6 +63,10 @@ export const command: Command = {
             const name: string = args[2];
             const points: number = +args[3];
 
+            if(Boolean(+name)){
+                msg.channel.send(`Name of the challenge cannot be a number`)
+            }
+
             //checking if the 3rd arg is a number
             //would be false if the third argument isn't a correct number
             if (!Boolean(points)) {
@@ -115,7 +119,7 @@ export const command: Command = {
                         { award: points }
                     );
 
-                    console.log(challengeExists)
+                    console.log(challengeExists);
                     if (challengeExists) {
                         msg.channel.send(`Challenge has been updated`);
                     } else {
