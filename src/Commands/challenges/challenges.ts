@@ -44,7 +44,7 @@ export const command: Command = {
 
         //if statements to run the command specified above
         //TODO make util functions to handle these
-        if (cmd === "add") {
+        if (cmd === "add" || cmd === "edit") {
             //checking if the user of the command has admin permissions, otherwise the command doesn't run
             if (!msg.member!.permissions!.has("ADMINISTRATOR")) {
                 msg.channel.send(`<@${msg.author.id}> You don't have access to this command.`);
@@ -60,6 +60,7 @@ export const command: Command = {
                 return;
             }
 
+            const name: string = args[2];
             const points: number = +args[3];
 
             //checking if the 3rd arg is a number
@@ -76,39 +77,54 @@ export const command: Command = {
                 return;
             }
 
-            const name: string = args[2];
-
             try {
-                //we create a challenge and store it in the db
+                if (cmd === "add") {
+                    //we create a challenge and store it in the db
 
-                // .lean() to get a plain js object instead of a large db object
-                const challengeExists: Challenge | null = await ChallengeModel.findOne({
-                    name,
-                    server,
-                }).lean();
-
-                //in case if the challenge already exists (with the same name and same server)
-                if (challengeExists) {
-                    msg.channel.send(`challenge named ${name} already exists`);
-                } else {
-                    //new challenge's object
-                    const newChallengeObj: Challenge = {
-                        server,
+                    // .lean() to get a plain js object instead of a large db object
+                    const challengeExists: Challenge | null = await ChallengeModel.findOne({
                         name,
-                        award: points,
-                        solvedCount: 0,
-                    };
+                        server,
+                    }).lean();
 
-                    const challenge = new ChallengeModel(newChallengeObj);
+                    //in case if the challenge already exists (with the same name and same server)
+                    if (challengeExists) {
+                        msg.channel.send(`challenge named ${name} already exists`);
+                    } else {
+                        //new challenge's object
+                        const newChallengeObj: Challenge = {
+                            server,
+                            name,
+                            award: points,
+                            solvedCount: 0,
+                        };
 
-                    //saving the new challenge
-                    await challenge.save();
+                        const challenge = new ChallengeModel(newChallengeObj);
 
-                    msg.channel.send(`The challenge ${name} has been added successfully!`);
+                        //saving the new challenge
+                        await challenge.save();
+
+                        msg.channel.send(`The challenge ${name} has been added successfully!`);
+                    }
+                } else if (cmd === "edit") {
+                    //we update the doc with the new points value
+
+                    //TODO Make naming variables consistent
+                    const challengeExists: Challenge | null = await ChallengeModel.findOneAndUpdate(
+                        { name, server },
+                        { award: points }
+                    );
+
+                    console.log(challengeExists)
+                    if (challengeExists) {
+                        msg.channel.send(`Challenge has been updated`);
+                    } else {
+                        msg.channel.send(`challenge doesn't exist`);
+                    }
                 }
             } catch (e) {
                 msg.channel.send(
-                    `an error has occured in ${command.name}.ts when trying to add challenge`
+                    `an error has occured in ${command.name}.ts when trying to add/edit challenge`
                 );
                 console.error(e);
             }
