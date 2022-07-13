@@ -1,13 +1,13 @@
 import { Message } from "discord.js";
-import { Command } from "../../Interfaces";
+import { Command, Challenge, User, IUser, IChallenge } from "../../Interfaces";
 import register from "../../utils/register";
 import UserModel from "../../models/user";
+import ChallengeModel from "../../models/challenge";
 
 import { ExtendedClient } from "../../Client/index";
 export const command: Command = {
     name: "award",
-    description:
-        "used by admins to give points to users when they solve a challenge",
+    description: "used by admins to give points to users when they solve a challenge",
     usage: `\`award @users <amount>\``,
     run: async (client: ExtendedClient, msg: Message, args: string[]) => {
         if (!msg.member!.permissions!.has("ADMINISTRATOR")) {
@@ -18,20 +18,34 @@ export const command: Command = {
         }
 
         //let ids: string[] = [];
-        const server = msg.guildId!.toString();
-        const points = +args[args.length - 1];
+        const server: string = msg.guildId!.toString();
+        let points: number;
 
-        if (!Boolean(points)) {
-            msg.channel.send("please enter a correct number");
-            return;
-        }
+        //if the last arg is a number, we add points directly
+        //otherwise, we assume the last arg is the name of the challenge
+        //thus we search for it and find its award and grant it to the users
 
-        //handling case when the given points are negative
-        if (points <= 0) {
-            msg.channel.send(
-                `Please enter a positive integer (if you want to subtract points, use \`${client.config.prefix} remove\` instead`
-            );
-            return;
+        let challengeExists: IChallenge | null;
+
+        //checking if last arg is a number
+        if (Boolean(+args[args.length - 1])) {
+            points = +args[args.length - 1];
+        } else {
+            //we assume the last arg is the challenge's name and we query it's reward from the db
+
+            const name = args[args.length - 1]; //to make it readable
+
+            challengeExists = await ChallengeModel.findOne({
+                name,
+                server,
+            });
+
+            if (challengeExists) {
+                points = challengeExists.award;
+            } else {
+                msg.channel.send(`challenge doesn't exist`);
+                return;
+            }
         }
 
         if (msg.mentions.users.size > 0) {
@@ -39,7 +53,7 @@ export const command: Command = {
                 msg.mentions.users.map(async (user) => {
                     try {
                         //checking if the user exists already
-                        const userExists = await UserModel.findOne({
+                        const userExists: IUser | null = await UserModel.findOne({
                             id: user.id,
                             server,
                         });
@@ -49,6 +63,14 @@ export const command: Command = {
                             await userExists!.updateOne({
                                 $inc: { score: points, solved: 1 },
                             });
+
+                            //if challengeExists is true, means it has been fetched above, 
+                            //means the command had the name instead of number
+                            //we increment the challenge's solvedCount by 1
+                            if (challengeExists) {
+                                challengeExists.updateOne({ $inc: { solvedCount: 1 } });
+                            }
+                            
                         } else {
                             //if the user doesn't exist, we create it and give it the points
                             const newUser = await register(user.id, server);
@@ -67,9 +89,7 @@ export const command: Command = {
             );
 
             if (ids!.includes(undefined)) {
-                msg.channel.send(
-                    "WARNING: perhaps someone wasn't awarded correctly, check again"
-                );
+                msg.channel.send("WARNING: perhaps someone wasn't awarded correctly, check again");
             }
 
             //removing falsy values from the ids array
