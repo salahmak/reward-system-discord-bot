@@ -1,12 +1,18 @@
 import { Document } from "mongoose";
 
-export interface User extends Document {
+export interface IUser extends Document { //for the mongoose docs objects
 	id: string;
 	server: string;
 	score: number;
 	solved: number;
 }
 
+export interface User {
+	id: string;
+	server: string;
+	score: number;
+	solved: number;
+}
 
 interface RegisterReturn {
 	success: Boolean;
