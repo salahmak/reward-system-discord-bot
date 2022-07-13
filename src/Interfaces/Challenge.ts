@@ -1,4 +1,6 @@
-export interface Challenge {
+import { Document } from "mongoose";
+
+export interface Challenge extends Document {
     name: string;           //name of the challenge (has to be unique)
     server: string;        //the id of the server that the challenge belongs to
     award: number;           //the points that the challenge gives
