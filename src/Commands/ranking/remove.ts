@@ -1,6 +1,5 @@
 import { Message } from "discord.js";
 import { Command } from "../../Interfaces";
-import register from "../../utils/register";
 import UserModel from "../../models/user";
 
 import { ExtendedClient } from "../../Client/index";

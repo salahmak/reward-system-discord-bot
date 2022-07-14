@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { Command, Challenge, User, IUser, IChallenge } from "../../Interfaces";
+import { Command, IUser, IChallenge } from "../../Interfaces";
 import register from "../../utils/register";
 import UserModel from "../../models/user";
 import ChallengeModel from "../../models/challenge";
@@ -49,7 +49,7 @@ export const command: Command = {
         }
 
         if (msg.mentions.users.size > 0) {
-            let ids = await Promise.all(
+            let ids : (string | undefined)[] = await Promise.all(
                 msg.mentions.users.map(async (user) => {
                     try {
                         //checking if the user exists already
