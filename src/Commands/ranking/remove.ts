@@ -17,7 +17,7 @@ export const command: Command = {
 
         //let ids: string[] = [];
         const server = msg.guildId!.toString();
-        let points: number;
+        let award: number;
 
         //if the last arg is a number, we add points directly
         //otherwise, we assume the last arg is the name of the challenge
@@ -27,10 +27,10 @@ export const command: Command = {
 
         // if last arg is number
         if (Boolean(+args[args.length - 1])) {
-            points = +args[args.length - 1];
+            award = +args[args.length - 1];
 
             // checking if entered number is valid
-            if (!(Number.isInteger(points) && Number.isFinite(points))) {
+            if (!(Number.isInteger(award) && Number.isFinite(award))) {
                 msg.channel.send(`please enter a finite positive integer`);
 
                 return;
@@ -43,7 +43,7 @@ export const command: Command = {
             challengeExists = await ChallengeModel.findOne({ name, server });
 
             if (challengeExists) {
-                points = challengeExists.award;
+                award = challengeExists.award;
             } else {
                 msg.channel.send("challlenge doesn't exist");
                 return;
@@ -62,9 +62,9 @@ export const command: Command = {
 
                         //if the user exists, we update their points
                         if (userExists) {
-                            if (userExists.score < points) {
+                            if (userExists.score < award) {
                                 msg.channel.send(
-                                    `user <@!${user.id}> has less points than ${points}`
+                                    `user <@!${user.id}> has less points than ${award}`
                                 );
                             } else {
                                 if (challengeExists) {
@@ -72,17 +72,17 @@ export const command: Command = {
                                     if (userExists.solved.includes(challengeExists.name)) {
                                         // if so, we remove the challenge from the array and remove points
                                         await userExists.updateOne({
-                                            $pullAll: { solved: challengeExists.name },
-                                            $inc: { score: -points },
+                                            $pull: { solved: challengeExists.name },
+                                            $inc: { score: -award },
                                         });
                                     } else {
-                                        msg.channel.send(`User hasn't solved the challenge before`);
+                                        msg.channel.send(`<@${user.id}> hasn't solved the challenge before`);
                                         return;
                                     }
                                 } else { 
                                     // in case if we are removing points using numbers
                                     await userExists!.updateOne({
-                                        $inc: { score: -points },
+                                        $inc: { score: -award },
                                     });
                                 }
                             }
@@ -94,22 +94,22 @@ export const command: Command = {
                         }
                     } catch (e) {
                         msg.channel.send(`error has occured in remove.ts`);
-                        console.log("error has occured in remove.ts");
+                        console.log(e);
                     }
                 })
             );
 
-            if (ids!.includes(undefined)) {
-                msg.channel.send(
-                    "WARNING: perhaps someone's points wheren't removed correctly, check again"
-                );
-            }
+            // if (ids!.includes(undefined)) {
+            //     msg.channel.send(
+            //         "WARNING: perhaps someone's points wheren't removed correctly, check again"
+            //     );
+            // }
 
             //removing falsy values from the ids array
             ids = ids.filter(Boolean);
 
             if (ids.length !== 0) {
-                msg.channel.send(`${points} point has been taken away from ${ids!.join(" and ")}`);
+                msg.channel.send(`${award} point has been taken away from ${ids!.join(" and ")}`);
             }
         } else {
             msg.channel.send(

@@ -19,7 +19,7 @@ export const command: Command = {
 
         //let ids: string[] = [];
         const server: string = msg.guildId!.toString();
-        let points: number;
+        let award: number;
 
         //if the last arg is a number, we add points directly
         //otherwise, we assume the last arg is the name of the challenge
@@ -29,15 +29,15 @@ export const command: Command = {
 
         //checking if last arg is a number
         if (Boolean(+args[args.length - 1])) {
-            points = +args[args.length - 1];
+            award = +args[args.length - 1];
 
             // checking if entered number is valid
-            if (!(Number.isInteger(points) && Number.isFinite(points))) {
+            if (!(Number.isInteger(award) && Number.isFinite(award))) {
                 msg.channel.send(`please enter a finite positive integer`);
 
                 return;
             }
-            
+
         } else {
             //we assume the last arg is the challenge's name and we query it's reward from the db
 
@@ -49,7 +49,7 @@ export const command: Command = {
             });
 
             if (challengeExists) {
-                points = challengeExists.award;
+                award = challengeExists.award;
             } else {
                 msg.channel.send(`challenge doesn't exist`);
                 return;
@@ -80,7 +80,7 @@ export const command: Command = {
                                 } else {
                                     // we update the user
                                     await userExists!.updateOne({
-                                        $inc: { score: points },
+                                        $inc: { score: award },
                                         $addToSet: { solved: challengeExists.name },
                                     });
 
@@ -93,7 +93,7 @@ export const command: Command = {
                             } else {
                                 //we only increment score and leave solved array as it is
                                 await userExists!.updateOne({
-                                    $inc: { score: points },
+                                    $inc: { score: award },
                                 });
                             }
                             return `<@!${user.id}>`;
@@ -106,7 +106,7 @@ export const command: Command = {
                                 if (challengeExists) {
                                     //in case if the challenge's name was used in the command'
                                     await UserModel.findOneAndUpdate(newUser.user, {
-                                        $inc: { score: points },
+                                        $inc: { score: award },
                                         $addToSet: { solved: challengeExists.name },
                                     });
 
@@ -115,7 +115,7 @@ export const command: Command = {
                                 } else {
                                     // we only increment score
                                     await UserModel.findOneAndUpdate(newUser.user, {
-                                        $inc: { score: points },
+                                        $inc: { score: award },
                                     });
                                 }
                                 return `<@!${user.id}>`;
@@ -123,14 +123,14 @@ export const command: Command = {
                         }
                     } catch (e) {
                         msg.channel.send(`error has occured in award.ts`);
-                        console.log("error has occured in award.ts");
+                        console.log(e);
                     }
                 })
             );
 
-            if (ids!.includes(undefined)) {
-                msg.channel.send("WARNING: perhaps someone wasn't awarded correctly, check again");
-            }
+            // if (ids!.includes(undefined)) {
+            //     msg.channel.send("WARNING: perhaps someone wasn't awarded correctly, check again");
+            // }
 
             //removing falsy values from the ids array
             ids = ids.filter(Boolean);
@@ -139,7 +139,7 @@ export const command: Command = {
                 msg.channel.send(
                     `${ids!.join(" and ")} ${
                         ids!.length == 1 ? "has" : "have"
-                    } been awarded ${points} point`
+                    } been awarded ${award} point`
                 );
             }
         } else {
