@@ -30,6 +30,14 @@ export const command: Command = {
         //checking if last arg is a number
         if (Boolean(+args[args.length - 1])) {
             points = +args[args.length - 1];
+
+            // checking if entered number is valid
+            if (!(Number.isInteger(points) && Number.isFinite(points))) {
+                msg.channel.send(`please enter a finite positive integer`);
+
+                return;
+            }
+            
         } else {
             //we assume the last arg is the challenge's name and we query it's reward from the db
 
@@ -49,7 +57,7 @@ export const command: Command = {
         }
 
         if (msg.mentions.users.size > 0) {
-            let ids : (string | undefined)[] = await Promise.all(
+            let ids: (string | undefined)[] = await Promise.all(
                 msg.mentions.users.map(async (user) => {
                     try {
                         //checking if the user exists already
@@ -60,27 +68,59 @@ export const command: Command = {
 
                         //if the user exists, we update their points
                         if (userExists) {
-                            await userExists!.updateOne({
-                                $inc: { score: points, solved: 1 },
-                            });
-
-                            //if challengeExists is true, means it has been fetched above, 
-                            //means the command had the name instead of number
-                            //we increment the challenge's solvedCount by 1
                             if (challengeExists) {
+                                //we add the challenge's name to the solved[] array and increment score with points
+
+                                //checking if the user had solved the challenge before
+                                if (userExists.solved.includes(challengeExists.name)) {
+                                    msg.channel.send(
+                                        `User <@${user.id}> had already solved the challenge before`
+                                    );
+                                    return;
+                                } else {
+                                    // we update the user
+                                    await userExists!.updateOne({
+                                        $inc: { score: points },
+                                        $addToSet: { solved: challengeExists.name },
+                                    });
+
+                                    // we update the challenge as well
+                                    await challengeExists!.updateOne({ $inc: { solvedCount: 1 } });
+                                }
+
+                                // we increment the solvedCount of the challenge by 1
                                 challengeExists.updateOne({ $inc: { solvedCount: 1 } });
-                            }
-                            
-                        } else {
-                            //if the user doesn't exist, we create it and give it the points
-                            const newUser = await register(user.id, server);
-                            if (newUser.success) {
-                                await UserModel.findOneAndUpdate(newUser.user, {
-                                    $inc: { score: points, solved: 1 },
+                            } else {
+                                //we only increment score and leave solved array as it is
+                                await userExists!.updateOne({
+                                    $inc: { score: points },
                                 });
                             }
+                            return `<@!${user.id}>`;
+                        } else {
+                            //if the user doesn't exist, we create it and give it the points
+
+                            // a new user means that they surely haven't done the challenge before, so we don't need to do the check we did before
+                            const newUser = await register(user.id, server);
+                            if (newUser.success) {
+                                if (challengeExists) {
+                                    //in case if the challenge's name was used in the command'
+                                    await UserModel.findOneAndUpdate(newUser.user, {
+                                        $inc: { score: points },
+                                        $addToSet: { solved: challengeExists.name },
+                                    });
+
+                                    // we update the challenge as well
+                                    await challengeExists!.updateOne({ $inc: { solvedCount: 1 } });
+                                } else {
+                                    // we only increment score
+                                    await UserModel.findOneAndUpdate(newUser.user, {
+                                        $inc: { score: points },
+                                    });
+                                }
+                                return `<@!${user.id}>`;
+                            }
                         }
-                        return `<@!${user.id}>`;
                     } catch (e) {
                         msg.channel.send(`error has occured in award.ts`);
                         console.log("error has occured in award.ts");
@@ -103,9 +143,7 @@ export const command: Command = {
                 );
             }
         } else {
-            msg.channel.send(
-                `error: use as shown:\n\`${client.config.prefix} award @user <amount>\``
-            );
+            msg.channel.send(`error: tag atleast 1 user to award them\``);
 
             return;
         }

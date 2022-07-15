@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
-import { Command } from "../../Interfaces";
+import { Command, IUser, IChallenge } from "../../Interfaces";
 import UserModel from "../../models/user";
+import ChallengeModel from "../../models/challenge";
 
 import { ExtendedClient } from "../../Client/index";
 
@@ -10,31 +11,47 @@ export const command: Command = {
     usage: `\`remove @users <amount>\``,
     run: async (client: ExtendedClient, msg: Message, args: string[]) => {
         if (!msg.member!.permissions!.has("ADMINISTRATOR")) {
-            msg.channel.send(
-                `<@${msg.author.id}> You don't have access to this command.`
-            );
+            msg.channel.send(`<@${msg.author.id}> You don't have access to this command.`);
             return;
         }
 
         //let ids: string[] = [];
         const server = msg.guildId!.toString();
-        const points = +args[args.length - 1];
+        let points: number;
 
-        if (!Boolean(points)) {
-            msg.channel.send("please enter a correct number");
-            return;
-        }
+        //if the last arg is a number, we add points directly
+        //otherwise, we assume the last arg is the name of the challenge
+        //thus we search for it and find its award and grant it to the users
 
-        //handling case when the given points are negative
-        if (points <= 0) {
-            msg.channel.send(
-                `Please enter a positive integer (if you want to award points, use \`${client.config.prefix} award\` instead`
-            );
-            return;
+        let challengeExists: IChallenge | null;
+
+        // if last arg is number
+        if (Boolean(+args[args.length - 1])) {
+            points = +args[args.length - 1];
+
+            // checking if entered number is valid
+            if (!(Number.isInteger(points) && Number.isFinite(points))) {
+                msg.channel.send(`please enter a finite positive integer`);
+
+                return;
+            }
+        } else {
+            //we assume the last arg is the challenge's name and we query it's reward from the db
+
+            const name = args[args.length - 1];
+
+            challengeExists = await ChallengeModel.findOne({ name, server });
+
+            if (challengeExists) {
+                points = challengeExists.award;
+            } else {
+                msg.channel.send("challlenge doesn't exist");
+                return;
+            }
         }
 
         if (msg.mentions.users.size > 0) {
-            let ids = await Promise.all(
+            let ids: (string | undefined)[] = await Promise.all(
                 msg.mentions.users.map(async (user) => {
                     try {
                         //checking if the user exists already
@@ -50,18 +67,31 @@ export const command: Command = {
                                     `user <@!${user.id}> has less points than ${points}`
                                 );
                             } else {
-                                await userExists!.updateOne({
-                                    $inc: { score: -points, solved: -1 },
-                                });
+                                if (challengeExists) {
+                                    // checking if user has solved the challenge or not
+                                    if (userExists.solved.includes(challengeExists.name)) {
+                                        // if so, we remove the challenge from the array and remove points
+                                        await userExists.updateOne({
+                                            $pullAll: { solved: challengeExists.name },
+                                            $inc: { score: -points },
+                                        });
+                                    } else {
+                                        msg.channel.send(`User hasn't solved the challenge before`);
+                                        return;
+                                    }
+                                } else { 
+                                    // in case if we are removing points using numbers
+                                    await userExists!.updateOne({
+                                        $inc: { score: -points },
+                                    });
+                                }
                             }
+                            return `<@!${user.id}>`;
                         } else {
                             //if the user doesn't exist, we exit
-                            msg.channel.send(
-                                `user <@!${user.id}> doesn't exist`
-                            );
-                            return null;
+                            msg.channel.send(`user <@!${user.id}> doesn't exist`);
+                            return;
                         }
-                        return `<@!${user.id}>`;
                     } catch (e) {
                         msg.channel.send(`error has occured in remove.ts`);
                         console.log("error has occured in remove.ts");
@@ -76,14 +106,10 @@ export const command: Command = {
             }
 
             //removing falsy values from the ids array
-            ids = ids.filter(Boolean)
+            ids = ids.filter(Boolean);
 
             if (ids.length !== 0) {
-                msg.channel.send(
-                    `${points} point has been taken away from ${ids!.join(
-                        " and "
-                    )}`
-                );
+                msg.channel.send(`${points} point has been taken away from ${ids!.join(" and ")}`);
             }
         } else {
             msg.channel.send(
