@@ -16,7 +16,7 @@ const register: Register = async (id: string, server: string) => {
 			id,
 			server,
 			score: 0,
-			solved: 0,
+			solved: [],
 		};
 
 		//saving the new user in the db

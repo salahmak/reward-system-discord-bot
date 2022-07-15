@@ -4,14 +4,14 @@ export interface IUser extends Document { //for the mongoose docs objects
 	id: string;
 	server: string;
 	score: number;
-	solved: number;
+	solved: string[]; //array of names of the solved challenges
 }
 
 export interface User {
 	id: string;
 	server: string;
 	score: number;
-	solved: number;
+	solved: string[];
 }
 
 interface RegisterReturn {

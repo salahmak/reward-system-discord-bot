@@ -5,7 +5,7 @@ const UserSchema = new Schema<User>({
 	id: String,
 	server: String,
 	score: Number,
-	solved: Number,
+	solved: [String],
 });
 
 const UserModel = model<User>("users", UserSchema);
