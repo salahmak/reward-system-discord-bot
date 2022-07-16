@@ -3,8 +3,8 @@ import { Command } from "../../Interfaces";
 import register from "../../utils/register";
 import getRank from "../../utils/getRank";
 import UserModel from "../../models/user";
-
 import { ExtendedClient } from "../../Client";
+
 
 export const command: Command = {
     name: "profile",
@@ -34,7 +34,7 @@ export const command: Command = {
                 const newUser = await register(id, server);
                 if (!newUser.success) {
                     msg.channel.send(
-                        "an error has occured while creating the user",
+                        "an error has occurred while creating the user",
                     );
                     return;
                 } else {
@@ -50,7 +50,7 @@ export const command: Command = {
                 .setAuthor("Profile")
                 .setThumbnail(avatarURL)
                 .addField("Score:", `${user.score}`)
-                .addField("Challenges solved:", `${user.solved}`)
+                .addField("Challenges solved:", `${user.solved.length}`)
                 .addField("Rank:", `${rank}/${total}`)
                 .setColor("#33ffe7")
                 .setFooter(serverName);
@@ -58,7 +58,7 @@ export const command: Command = {
             msg.channel.send({ embeds: [embed] });
 
         } catch (e) {
-            console.log("error has occured in profile.ts", e);
+            console.log("error has occurred in profile.ts", e);
         }
     },
     aliases: ["p"],
