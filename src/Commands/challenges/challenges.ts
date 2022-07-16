@@ -61,7 +61,7 @@ export const command: Command = {
             }
 
             const name: string = args[2];
-            const points: number = +args[3];
+            const award: number = +args[3];
 
             if (Boolean(+name)) {
                 msg.channel.send(`Name of the challenge cannot be a number`);
@@ -69,14 +69,14 @@ export const command: Command = {
 
             //checking if the 3rd arg is a number
             //would be false if the third argument isn't a correct number
-            if (!Boolean(points)) {
+            if (!Boolean(award)) {
                 msg.channel.send(`Please enter a correct number`);
                 return;
             }
 
-            //todo do the same for award command
+            
             //checking if the entered value is a positive finite integer
-            if (points <= 0 || !Number.isInteger(points) || !Number.isFinite(points)) {
+            if (award <= 0 || !Number.isInteger(award) || !Number.isFinite(award)) {
                 msg.channel.send(`Please enter a positive integer`);
                 return;
             }
@@ -99,7 +99,7 @@ export const command: Command = {
                         const newChallengeObj: Challenge = {
                             server,
                             name,
-                            award: points,
+                            award: award,
                             solvedCount: 0,
                         };
 
@@ -116,7 +116,7 @@ export const command: Command = {
                     //TODO Make naming variables consistent
                     const challengeExists: Challenge | null = await ChallengeModel.findOneAndUpdate(
                         { name, server },
-                        { award: points }
+                        { award: award }
                     );
 
                     console.log(challengeExists);
