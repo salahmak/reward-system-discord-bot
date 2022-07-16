@@ -1,4 +1,1 @@
-- Add "solvedChallenges" property to User schema which has an array of the names of the solved challenges by the user
 - Reset command which resets the users points in the server it ran on to 0
-- Refactor challnges.ts command
-- Test edge cases of award and remove commands
