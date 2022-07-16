@@ -9,7 +9,8 @@ import { ExtendedClient } from "../../Client";
 export const command: Command = {
     name: "award",
     description: "used by admins to give points to users when they solve a challenge",
-    usage: `\`award @users <amount>\``,
+    usage: `\`award @users <amount>\`\n
+            \`award @users <challengeName>\``,
     run: async (client: ExtendedClient, msg: Message, args: string[]) => {
         if (!msg.member!.permissions!.has("ADMINISTRATOR")) {
             msg.channel.send(
@@ -18,7 +19,6 @@ export const command: Command = {
             return;
         }
 
-        //let ids: string[] = [];
         const server: string = msg.guildId!.toString();
         let award: number;
 

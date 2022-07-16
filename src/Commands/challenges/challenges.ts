@@ -16,8 +16,11 @@ import listChallenges from "../../utils/challenges/listChallenges";
 
 export const command: Command = {
     name: "challenges",
-    description: "managing challenges",
-    usage: "test",
+    description: "used by admins to: add, edit, remove and list challenges",
+    usage: `\`challenges add <challengeName> <award>\`\n
+            \`challenges edit <challengeName> <award>\`\n
+            \`challenges remove <challengeName>\`\n
+            \`challenges list\``,
     aliases: ["ch", "challenge"],
 
     /**
@@ -42,7 +45,6 @@ export const command: Command = {
         const cmd: string = args[1];
 
         //if statements to run the command specified above
-        //TODO make util functions to handle these
         if (cmd === "add" || cmd === "edit") {
             await addEditChallenge(client, msg, args);
         } else if (cmd == "remove") {

@@ -8,7 +8,8 @@ import { ExtendedClient } from "../../Client";
 export const command: Command = {
     name: "remove",
     description: "used by admins to take away points from users.",
-    usage: `\`remove @users <amount>\``,
+    usage: `\`remove @users <amount>\`\n
+            \`remove @users <challengeName>\``,
     run: async (client: ExtendedClient, msg: Message, args: string[]) => {
         if (!msg.member!.permissions!.has("ADMINISTRATOR")) {
             msg.channel.send(`<@${msg.author.id}> You don't have access to this command.`);
