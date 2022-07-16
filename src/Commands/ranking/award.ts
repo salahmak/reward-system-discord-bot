@@ -32,7 +32,7 @@ export const command: Command = {
             award = +args[args.length - 1];
 
             // checking if entered number is valid
-            if (!(Number.isInteger(award) && Number.isFinite(award))) {
+            if (!(award > 0 && Number.isInteger(award) && Number.isFinite(award))) {
                 msg.channel.send(`please enter a finite positive integer`);
 
                 return;
