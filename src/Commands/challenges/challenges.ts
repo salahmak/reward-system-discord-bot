@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, MessageEmbed } from "discord.js";
 import { Command, Challenge } from "../../Interfaces";
 import ChallengeModel from "../../models/challenge";
 
@@ -63,8 +63,8 @@ export const command: Command = {
             const name: string = args[2];
             const points: number = +args[3];
 
-            if(Boolean(+name)){
-                msg.channel.send(`Name of the challenge cannot be a number`)
+            if (Boolean(+name)) {
+                msg.channel.send(`Name of the challenge cannot be a number`);
             }
 
             //checking if the 3rd arg is a number
@@ -175,20 +175,30 @@ export const command: Command = {
 
             try {
                 // we get the array of challenges
-                const challenges: Challenge[] | null = await ChallengeModel.find({});
+                const challenges: Challenge[] | null = await ChallengeModel.find({}).lean();
 
                 //empty array means no challenges were added
                 if (challenges?.length === 0) {
-                    msg.channel.send(`no challenges, please add some`);
+                    msg.channel.send(`no challenges to list, please add some`);
+                    return;
                 }
                 //in case if there r challenges
                 else {
-                    let output: string = "Challenges:\n";
-                    challenges?.forEach(({ name, award, solvedCount }: Challenge) => {
-                        output += `name: ${name}, award: ${award}, solved by: ${solvedCount} participant\n`;
+                    const embed = new MessageEmbed()
+                        .setTitle("Challenges")
+                        .setDescription(`Available challenges`)
+                        .setColor("#33ffe7")
+                        .setThumbnail(msg.guild!.iconURL()!)
+                        .setFooter(msg.guild!.name);
+
+                    challenges!.forEach((ch, i) => {
+                        embed.addField(
+                            `${ch.name}`,
+                            `**Award**: ${ch.award}, **Solved by**: ${ch.solvedCount} user`
+                        );
                     });
 
-                    msg.channel.send(output);
+                    msg.channel.send({ embeds: [embed] });
                 }
             } catch (e) {
                 msg.channel.send(
