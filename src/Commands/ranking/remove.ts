@@ -1,9 +1,9 @@
 import { Message } from "discord.js";
-import { Command, IUser, IChallenge } from "../../Interfaces";
+import { Command, IChallenge } from "../../Interfaces";
 import UserModel from "../../models/user";
 import ChallengeModel from "../../models/challenge";
 
-import { ExtendedClient } from "../../Client/index";
+import { ExtendedClient } from "../../Client";
 
 export const command: Command = {
     name: "remove",
@@ -64,7 +64,7 @@ export const command: Command = {
                         if (userExists) {
                             if (userExists.score < award) {
                                 msg.channel.send(
-                                    `user <@!${user.id}> has less points than ${award}`
+                                    `user <@!${user.id}> has less points than ${award}`,
                                 );
                             } else {
                                 if (challengeExists) {
@@ -79,7 +79,7 @@ export const command: Command = {
                                         msg.channel.send(`<@${user.id}> hasn't solved the challenge before`);
                                         return;
                                     }
-                                } else { 
+                                } else {
                                     // in case if we are removing points using numbers
                                     await userExists!.updateOne({
                                         $inc: { score: -award },
@@ -96,7 +96,7 @@ export const command: Command = {
                         msg.channel.send(`error has occured in remove.ts`);
                         console.log(e);
                     }
-                })
+                }),
             );
 
             // if (ids!.includes(undefined)) {
@@ -113,7 +113,7 @@ export const command: Command = {
             }
         } else {
             msg.channel.send(
-                `error: use as shown:\n\`${client.config.prefix} remove @user <amount>\``
+                `error: use as shown:\n\`${client.config.prefix} remove @user <amount>\``,
             );
 
             return;

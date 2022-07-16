@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
-import {Challenge} from "../../Interfaces"
-import ChallengeModel from "../../models/challenge"
+import { Challenge } from "../../Interfaces";
+import ChallengeModel from "../../models/challenge";
 import { ExtendedClient } from "../../Client";
 
 const removeChallenge = async (client: ExtendedClient, msg: Message, args: string[]): Promise<void> => {
@@ -16,7 +16,7 @@ const removeChallenge = async (client: ExtendedClient, msg: Message, args: strin
     //checking of the <name> argument was given to the command
     if (!Boolean(args[2])) {
         msg.channel.send(
-            `Please make sure to pass enough arguments to "remove" subcommand\n try running \`${client.config.prefix} help challenges\` to get info about the usage of this command`
+            `Please make sure to pass enough arguments to "remove" subcommand\n try running \`${client.config.prefix} help challenges\` to get info about the usage of this command`,
         );
 
         return;
@@ -38,10 +38,10 @@ const removeChallenge = async (client: ExtendedClient, msg: Message, args: strin
         }
     } catch (e) {
         msg.channel.send(
-            `an error has occured in removeChallenge.ts when trying to remove challenge`
+            `an error has occured in removeChallenge.ts when trying to remove challenge`,
         );
         console.log(e);
     }
-}
+};
 
 export default removeChallenge;

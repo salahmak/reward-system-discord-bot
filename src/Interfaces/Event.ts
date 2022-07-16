@@ -2,11 +2,11 @@ import { ExtendedClient } from "../Client";
 import { ClientEvents } from "discord.js";
 
 interface Run {
-	(client: ExtendedClient, ...args: any[]):any;
+    (client: ExtendedClient, ...args: any[]): any;
 }
 
 export interface Event {
-	name: keyof ClientEvents;
-	once: Boolean;
-	run: Run;
+    name: keyof ClientEvents;
+    once: Boolean;
+    run: Run;
 }

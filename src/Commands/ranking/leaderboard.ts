@@ -1,8 +1,8 @@
-import { Message, MessageEmbed, Guild } from "discord.js";
+import { Guild, Message, MessageEmbed } from "discord.js";
 import { Command, User } from "../../Interfaces";
 import UserModel from "../../models/user";
 
-import { ExtendedClient } from "../../Client/index";
+import { ExtendedClient } from "../../Client";
 
 export const command: Command = {
     name: "leaderboard",
@@ -37,7 +37,7 @@ export const command: Command = {
             users.forEach((user, i) => {
                 embed.addField(
                     `------${1 + i}------ `,
-                    `<@${user.id}>: **Score**: ${user.score}, **Solved**: ${user.solved.length} challenges`
+                    `<@${user.id}>: **Score**: ${user.score}, **Solved**: ${user.solved.length} challenges`,
                 );
             });
 

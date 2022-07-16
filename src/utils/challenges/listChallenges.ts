@@ -1,6 +1,6 @@
 import { Message, MessageEmbed } from "discord.js";
-import {Challenge} from "../../Interfaces"
-import ChallengeModel from "../../models/challenge"
+import { Challenge } from "../../Interfaces";
+import ChallengeModel from "../../models/challenge";
 import { ExtendedClient } from "../../Client";
 
 const listChallenges = async (client: ExtendedClient, msg: Message): Promise<void> => {
@@ -27,7 +27,7 @@ const listChallenges = async (client: ExtendedClient, msg: Message): Promise<voi
             challenges!.forEach((ch) => {
                 embed.addField(
                     `${ch.name}`,
-                    `**Award**: ${ch.award}, **Solved by**: ${ch.solvedCount} user`
+                    `**Award**: ${ch.award}, **Solved by**: ${ch.solvedCount} user`,
                 );
             });
 
@@ -35,9 +35,9 @@ const listChallenges = async (client: ExtendedClient, msg: Message): Promise<voi
         }
     } catch (e) {
         msg.channel.send(
-            `an error has occured in listChallenges.ts when trying to list challenges`
+            `an error has occured in listChallenges.ts when trying to list challenges`,
         );
     }
-}
+};
 
 export default listChallenges;

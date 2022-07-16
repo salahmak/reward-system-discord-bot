@@ -1,10 +1,11 @@
 import { Message } from "discord.js";
-import { Command, IUser, IChallenge } from "../../Interfaces";
+import { Command, IChallenge, IUser } from "../../Interfaces";
 import register from "../../utils/register";
 import UserModel from "../../models/user";
 import ChallengeModel from "../../models/challenge";
 
-import { ExtendedClient } from "../../Client/index";
+import { ExtendedClient } from "../../Client";
+
 export const command: Command = {
     name: "award",
     description: "used by admins to give points to users when they solve a challenge",
@@ -12,7 +13,7 @@ export const command: Command = {
     run: async (client: ExtendedClient, msg: Message, args: string[]) => {
         if (!msg.member!.permissions!.has("ADMINISTRATOR")) {
             msg.channel.send(
-                `<@${msg.author.id}> You don't have access to this command, if you have solved a challenge, please ask admins to award you, thanks.`
+                `<@${msg.author.id}> You don't have access to this command, if you have solved a challenge, please ask admins to award you, thanks.`,
             );
             return;
         }
@@ -74,7 +75,7 @@ export const command: Command = {
                                 //checking if the user had solved the challenge before
                                 if (userExists.solved.includes(challengeExists.name)) {
                                     msg.channel.send(
-                                        `User <@${user.id}> had already solved the challenge before`
+                                        `User <@${user.id}> had already solved the challenge before`,
                                     );
                                     return;
                                 } else {
@@ -125,7 +126,7 @@ export const command: Command = {
                         msg.channel.send(`error has occured in award.ts`);
                         console.log(e);
                     }
-                })
+                }),
             );
 
             // if (ids!.includes(undefined)) {
@@ -139,7 +140,7 @@ export const command: Command = {
                 msg.channel.send(
                     `${ids!.join(" and ")} ${
                         ids!.length == 1 ? "has" : "have"
-                    } been awarded ${award} point`
+                    } been awarded ${award} point`,
                 );
             }
         } else {

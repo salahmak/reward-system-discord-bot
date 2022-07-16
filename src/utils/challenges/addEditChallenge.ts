@@ -1,10 +1,10 @@
 import { Message } from "discord.js";
-import {Challenge} from "../../Interfaces"
-import ChallengeModel from "../../models/challenge"
+import { Challenge } from "../../Interfaces";
+import ChallengeModel from "../../models/challenge";
 import { ExtendedClient } from "../../Client";
 
 
-const addEditChallenge = async (client: ExtendedClient ,msg: Message, args: string[]): Promise<void> => {
+const addEditChallenge = async (client: ExtendedClient, msg: Message, args: string[]): Promise<void> => {
     //server ID
     const server: string = msg.guildId!.toString();
 
@@ -20,7 +20,7 @@ const addEditChallenge = async (client: ExtendedClient ,msg: Message, args: stri
     //we check if the 2nd and 3rd args were provided
     if (!Boolean(args[2] && Boolean(args[3]))) {
         msg.channel.send(
-            `Please make sure to pass enough arguments to "add" subcommand\n try running \`${client.config.prefix} help challenges\` to get info about the usage of this command`
+            `Please make sure to pass enough arguments to "add" subcommand\n try running \`${client.config.prefix} help challenges\` to get info about the usage of this command`,
         );
 
         return;
@@ -82,7 +82,7 @@ const addEditChallenge = async (client: ExtendedClient ,msg: Message, args: stri
 
             const challengeExists: Challenge | null = await ChallengeModel.findOneAndUpdate(
                 { name, server },
-                { award: award }
+                { award: award },
             );
 
             console.log(challengeExists);
@@ -94,12 +94,11 @@ const addEditChallenge = async (client: ExtendedClient ,msg: Message, args: stri
         }
     } catch (e) {
         msg.channel.send(
-            `an error has occurred in addEditChallenge.ts when trying to add/edit challenge`
+            `an error has occurred in addEditChallenge.ts when trying to add/edit challenge`,
         );
         console.error(e);
     }
-}
-
+};
 
 
 export default addEditChallenge;

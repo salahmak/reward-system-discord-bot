@@ -18,7 +18,7 @@ export const command: Command = {
     name: "challenges",
     description: "managing challenges",
     usage: "test",
-    aliases: ["ch"],
+    aliases: ["ch", "challenge"],
 
     /**
      *
@@ -46,12 +46,12 @@ export const command: Command = {
         if (cmd === "add" || cmd === "edit") {
             await addEditChallenge(client, msg, args);
         } else if (cmd == "remove") {
-            await removeChallenge(client, msg, args)
+            await removeChallenge(client, msg, args);
         } else if (cmd === "list") {
             await listChallenges(client, msg);
         } else {
             msg.channel.send(
-                `Unknown command ${cmd} try running \`${client.config.prefix} help ${command.name}\` to get info about the usage of this command`
+                `Unknown command ${cmd} try running \`${client.config.prefix} help ${command.name}\` to get info about the usage of this command`,
             );
         }
     },

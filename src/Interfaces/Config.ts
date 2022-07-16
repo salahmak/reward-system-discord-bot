@@ -1,5 +1,5 @@
 export interface Config {
-	token: string;
-	mongoUrl: string;
-	prefix: string;
+    token: string;
+    mongoUrl: string;
+    prefix: string;
 }
